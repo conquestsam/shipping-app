@@ -41,10 +41,10 @@ const ShippingCanvas = () => {
     const buttonY = 512;
     const buttonWidth = 150;
     const buttonHeight = 50;
-
+    
     ctx.strokeRect(emailX, emailY, 430, 30);
     ctx.strokeRect(passwordX, passwordY, 430, 30);
-
+    
     setInputBox(emailInputRef.current, emailX, emailY, 430, 30);
     setInputBox(passwordInputRef.current, passwordX, passwordY, 430, 30);
 
@@ -123,7 +123,6 @@ const ShippingCanvas = () => {
         height="786"
         style={{ border: '1px solid black' }}
       ></canvas>
-
       <input
         ref={emailInputRef} // Use ref to access the value
         type="text"
