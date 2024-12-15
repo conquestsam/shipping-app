@@ -1,0 +1,26 @@
+{
+  "providers": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-shippingapp-dev-03f11-authRole",
+      "UnauthRoleArn": "arn:aws:iam::116981801016:role/amplify-shippingapp-dev-03f11-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::116981801016:role/amplify-shippingapp-dev-03f11-authRole",
+      "Region": "eu-north-1",
+      "DeploymentBucketName": "amplify-shippingapp-dev-03f11-deployment",
+      "UnauthRoleName": "amplify-shippingapp-dev-03f11-unauthRole",
+      "StackName": "amplify-shippingapp-dev-03f11",
+      "StackId": "arn:aws:cloudformation:eu-north-1:116981801016:stack/amplify-shippingapp-dev-03f11/1b154a50-ba43-11ef-a3ef-063d0033552b",
+      "AmplifyAppId": "d14bdns5594xon"
+    }
+  },
+  "hosting": {
+    "S3AndCloudFront": {
+      "service": "S3AndCloudFront",
+      "providerPlugin": "awscloudformation",
+      "providerMetadata": {
+        "s3TemplateURL": "https://s3.amazonaws.com/amplify-shippingapp-dev-03f11-deployment/amplify-cfn-templates/hosting/template.json",
+        "logicalId": "hostingS3AndCloudFront"
+      },
+      "lastPushTimeStamp": "2024-12-14T18:14:28.052Z"
+    }
+  }
+}
